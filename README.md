@@ -1,34 +1,32 @@
 # Telegram ML Bot
 
-Telegram բոտ, որը ստանում է օգտատիրոջ տեքստային հաղորդագրությունը, փոխանցում այն նախապես ուսուցանված Machine Learning մոդելին և վերադարձնում կանխատեսման արդյունքը։
+A Python Telegram bot that takes a text message, passes it to a pre-trained machine learning model, and sends the prediction back to the chat.
 
-## Ինչպես է աշխատում
+## How It Works
 
-1. Օգտատերը Telegram-ում ուղարկում է `/start` հրամանը, և բոտը ողջունում է նրան անունով։
-2. Օգտատերն ուղարկում է տեքստային հաղորդագրություն։
-3. Բոտը կանչում է մոդելի `predict()` մեթոդը՝ հաղորդագրությունը փոխանցելով մեկ տարրից բաղկացած ցուցակով։
-4. Բոտը վերադարձնում է մոդելի կանխատեսումը Telegram-ի չաթում։
+1. Send `/start` to the bot. It greets you by your first name.
+2. Send a text message. The bot passes it to the model as a one-item list using `model.predict([text])`.
+3. The bot sends the model's prediction back to the chat.
 
-## Տեխնոլոգիաներ
+## Technologies
 
-| Տեխնոլոգիա | Օգտագործում |
-|---|---|
-| Python | Բոտի ծրագրային տրամաբանություն |
-| pyTelegramBotAPI (`telebot`) | Telegram-ից հաղորդագրությունների ընդունում և պատասխանների ուղարկում |
-| `pickle` | `bot.pkl` ֆայլից նախապես ուսուցանված մոդելի բեռնում |
+- **Python** for the bot logic
+- **pyTelegramBotAPI (`telebot`)** for receiving and sending Telegram messages
+- **`pickle`** for loading the pre-trained model from `bot.pkl`
 
-## Տեղադրում և գործարկում
+## Setup and Usage
 
-1. Տեղադրեք Telegram-ի հետ աշխատանքի գրադարանը։
+1. Install the Telegram library.
 
    ```bash
-   pip install pyTelegramBotAPI
+   python -m pip install pyTelegramBotAPI
    ```
 
-2. Եթե մոդելը ստեղծվել է լրացուցիչ գրադարաններով, տեղադրեք նաև դրանց՝ մոդելի ուսուցման ժամանակ օգտագործված տարբերակները։
-3. `bot.pkl` ֆայլը տեղադրեք այն պանակում, որտեղից գործարկում եք ծրագիրը։ Բեռնեք միայն վստահելի աղբյուրից ստացված `.pkl` ֆայլեր։
-4. Telegram-ում բացեք `@BotFather`-ը, ստեղծեք բոտ `/newbot` հրամանով և ստացեք API token։
-5. Python կոդում token-ը կարդացեք միջավայրի փոփոխականից։
+   Install any libraries required by the model using the same versions that were used when it was saved.
+
+2. Put `bot.pkl` in the directory from which you run the script. Only load pickle files from trusted sources.
+
+3. Create a Telegram bot using `@BotFather` and the `/newbot` command. Store the bot token in an environment variable and read it in your Python script.
 
    ```python
    import os
@@ -36,13 +34,22 @@ Telegram բոտ, որը ստանում է օգտատիրոջ տեքստային 
    bot = telebot.TeleBot(os.environ["TELEGRAM_BOT_TOKEN"])
    ```
 
-6. Windows PowerShell-ում սահմանեք փոփոխականը և գործարկեք ծրագիրը։
+4. Set the token and run the bot. In Windows PowerShell, use the following commands.
 
    ```powershell
    $env:TELEGRAM_BOT_TOKEN = "<YOUR_BOT_TOKEN>"
    python bot.py
    ```
 
-   Եթե Python ֆայլն այլ անուն ունի, `bot.py`-ի փոխարեն օգտագործեք դրա անունը։
+   Replace `bot.py` with your script's filename if it differs.
 
-7. Telegram-ում բացեք ձեր բոտը, ուղարկեք `/start`, ապա գրեք փորձնական հաղորդագրություն։
+5. Open your bot in Telegram, send `/start`, and enter a test message.
+
+## Troubleshooting
+
+If `predict()` returns a list or NumPy array, convert the first prediction to a string before sending it to Telegram.
+
+```python
+prediction = mymodel.predict([message.text])[0]
+bot.send_message(message.chat.id, str(prediction))
+```
